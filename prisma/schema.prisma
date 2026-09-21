@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("kasir") // kasir | pemilik
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Menu {
+  id          Int      @id @default(autoincrement())
+  name        String
+  category    String
+  price       Int
+  description String?
+  imageUrl    String?  @map("image_url")
+  isAvailable Boolean  @default(true) @map("is_available")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  items TransactionItem[]
+
+  @@map("menus")
+}
+
+model Transaction {
+  id                Int      @id @default(autoincrement())
+  transactionNumber String   @unique @map("transaction_number")
+  totalAmount       Int      @map("total_amount")
+  paidAmount        Int      @map("paid_amount")
+  changeAmount      Int      @map("change_amount")
+  cashierName       String?  @map("cashier_name")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  items TransactionItem[]
+
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+model TransactionItem {
+  id            Int     @id @default(autoincrement())
+  transactionId Int     @map("transaction_id")
+  menuId        Int?    @map("menu_id")
+  menuName      String  @map("menu_name")
+  price         Int
+  quantity      Int
+  subtotal      Int
+  note          String?
+
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  menu        Menu?       @relation(fields: [menuId], references: [id], onDelete: SetNull)
+
+  @@map("transaction_items")
+}

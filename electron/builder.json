@@ -1,0 +1,9 @@
+{
+  "appId": "id.pos.lalapan",
+  "productName": "POS Lalapan",
+  "directories": { "output": "dist" },
+  "files": ["electron/**/*"],
+  "win": { "target": "nsis" },
+  "mac": { "target": "dmg" },
+  "linux": { "target": "AppImage" }
+}

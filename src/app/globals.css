@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body { margin: 0; padding: 0; }
+  body {
+    @apply bg-surface-canvas text-on-surface antialiased;
+    font-feature-settings: "tnum" 1;
+    overscroll-behavior: none;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { @apply bg-border-subtle rounded-full; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-space-xs bg-primary-container hover:bg-secondary
+           text-on-primary text-title-sm px-space-md py-2.5 rounded-lg shadow-sm
+           transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-space-xs bg-surface-card hover:bg-surface-canvas
+           border border-border-subtle text-on-surface text-title-sm px-space-md py-2.5 rounded-lg transition-colors;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-space-xs bg-status-danger hover:bg-[#b91c1c]
+           text-white text-title-sm px-space-md py-2.5 rounded-lg transition-colors;
+  }
+  .input-field {
+    @apply w-full h-11 px-space-md bg-surface-card border border-border-subtle rounded-lg text-body-sm
+           text-on-surface placeholder:text-tertiary focus:outline-none focus:border-primary-container
+           focus:ring-1 focus:ring-primary-container transition-all;
+  }
+  .card {
+    @apply bg-surface-card rounded-xl border border-border-subtle shadow-[0_1px_3px_0_rgba(0,0,0,0.04)];
+  }
+  .badge-success { @apply inline-flex items-center px-2.5 py-0.5 rounded-md bg-[#DCFCE7] text-status-success text-label-sm; }
+  .badge-muted   { @apply inline-flex items-center px-2.5 py-0.5 rounded-md bg-[#F3F4F6] text-tertiary text-label-sm; }
+}
+
+/* ===== Mode cetak struk ===== */
+@media print {
+  html, body { height: auto !important; min-height: 0 !important; overflow: visible !important; }
+  body * { visibility: hidden !important; }
+  #area-struk, #area-struk * { visibility: visible !important; }
+  #area-struk {
+    position: absolute; left: 0; top: 0;
+    width: 80mm; padding: 4mm;
+    border: none !important; box-shadow: none !important;
+  }
+  .no-print { display: none !important; }
+  @page { margin: 0; size: 80mm auto; }
+}
