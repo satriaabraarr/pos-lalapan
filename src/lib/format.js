@@ -20,3 +20,14 @@ export function jam(iso) {
 export function hariIni() {
   return new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Jakarta" });
 }
+
+/** Format ringkas untuk label grafik: Rp15rb, Rp1.2jt, dsb. */
+export function rupiahSingkat(value) {
+  const n = Number(value || 0);
+  if (n >= 1_000_000) {
+    const jt = n / 1_000_000;
+    return `Rp${jt % 1 === 0 ? jt.toFixed(0) : jt.toFixed(1)}jt`;
+  }
+  if (n >= 1_000) return `Rp${Math.round(n / 1000)}rb`;
+  return `Rp${n}`;
+}

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const COOKIE_NAME = "poslalapan_token";
+const COOKIE_NAME = "lalapanku_token";
 const PUBLIC_PAGES = ["/login"];
 
 async function isValid(token) {
@@ -32,5 +32,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/dashboard/:path*", "/transaksi/:path*", "/riwayat/:path*", "/menu/:path*"],
+  matcher: ["/", "/login", "/dashboard/:path*", "/transaksi/:path*", "/riwayat/:path*", "/laporan/:path*", "/menu/:path*"],
 };

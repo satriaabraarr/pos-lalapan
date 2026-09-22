@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/auth";
-import { rentangHarian } from "@/lib/date-range";
+import { rentangHarian, rentangBulanan } from "@/lib/date-range";
 
 /** Nomor transaksi unik: TRX-YYYYMMDD-0001 (urut per hari) */
 async function buatNomorTransaksi() {
@@ -16,12 +16,16 @@ export async function GET(request) {
 
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date");          // YYYY-MM-DD (opsional)
+  const month = searchParams.get("month");        // YYYY-MM (opsional, dipakai Laporan Bulanan)
   const q = searchParams.get("q")?.trim();        // cari nomor transaksi
-  const limit = Number(searchParams.get("limit") || 100);
+  const limit = Number(searchParams.get("limit") || (month ? 1000 : 100));
 
   const where = {};
   if (date) {
     const { start, end } = rentangHarian(date);
+    where.createdAt = { gte: start, lte: end };
+  } else if (month) {
+    const { start, end } = rentangBulanan(month);
     where.createdAt = { gte: start, lte: end };
   }
   if (q) where.transactionNumber = { contains: q, mode: "insensitive" };

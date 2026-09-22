@@ -7,6 +7,7 @@ const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: "grid_view" },
   { href: "/transaksi", label: "Transaksi", icon: "point_of_sale" },
   { href: "/riwayat", label: "Riwayat Transaksi", icon: "receipt_long" },
+  { href: "/laporan", label: "Laporan Bulanan", icon: "insights" },
   { href: "/menu", label: "Manajemen Menu", icon: "restaurant_menu" },
 ];
 
@@ -38,7 +39,7 @@ export default function Sidebar({ open, onClose }) {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-title-sm font-bold tracking-tight truncate">
-                <span className="text-primary-container">POS</span> Lalapan
+                Lalapan<span className="text-primary-container">Ku</span>
               </span>
               <span className="text-label-sm text-tertiary truncate">Kasir Warung Lalapan</span>
             </div>
