@@ -17,7 +17,7 @@ export async function GET(request) {
       ...(category && category !== "Semua" ? { category } : {}),
       ...(onlyAvailable ? { isAvailable: true } : {}),
     },
-    orderBy: [{ category: "asc" }, { name: "asc" }],
+    orderBy: [{ order: "asc" }, { name: "asc" }],
   });
 
   return NextResponse.json({ data: menus });
@@ -30,6 +30,9 @@ export async function POST(request) {
   const error = validasiMenu(body);
   if (error) return NextResponse.json({ message: error }, { status: 422 });
 
+  const terakhir = await prisma.menu.aggregate({ _max: { order: true } });
+  const urutanBaru = (terakhir._max.order ?? -1) + 1;
+
   const menu = await prisma.menu.create({
     data: {
       name: body.name.trim(),
@@ -38,6 +41,7 @@ export async function POST(request) {
       description: body.description?.trim() || null,
       imageUrl: body.imageUrl?.trim() || null,
       isAvailable: body.isAvailable !== false,
+      order: urutanBaru,
     },
   });
 

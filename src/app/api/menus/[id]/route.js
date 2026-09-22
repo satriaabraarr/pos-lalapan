@@ -15,13 +15,16 @@ export async function PUT(request, { params }) {
 
   const body = await request.json();
 
-  // Update status tersedia saja (toggle cepat dari tabel)
-  if (Object.keys(body).length === 1 && "isAvailable" in body) {
-    const menu = await prisma.menu.update({
-      where: { id: Number(params.id) },
-      data: { isAvailable: Boolean(body.isAvailable) },
-    });
-    return NextResponse.json({ message: "Status menu diperbarui.", data: menu });
+  const KUNCI_CEPAT = ["isAvailable", "order"];
+
+  // Update status tersedia dan/atau urutan saja (aksi cepat dari tabel, tanpa form penuh)
+  if (Object.keys(body).length > 0 && Object.keys(body).every((k) => KUNCI_CEPAT.includes(k))) {
+    const data = {};
+    if ("isAvailable" in body) data.isAvailable = Boolean(body.isAvailable);
+    if ("order" in body) data.order = Math.round(Number(body.order));
+
+    const menu = await prisma.menu.update({ where: { id: Number(params.id) }, data });
+    return NextResponse.json({ message: "Menu diperbarui.", data: menu });
   }
 
   const error = validasiMenu(body);
