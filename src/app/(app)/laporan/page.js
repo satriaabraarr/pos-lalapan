@@ -75,13 +75,13 @@ export default function LaporanBulananPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-space-md items-stretch">
         <div className="flex flex-col gap-space-md">
-          <StatCard label="Total Pemasukan" value={loading ? "…" : rupiah(data?.totalPemasukan)} icon="payments" />
-          <StatCard label="Jumlah Transaksi" value={loading ? "…" : data?.jumlahTransaksi ?? 0} icon="receipt_long" />
+          <StatCard label="Pemasukan Bulan Ini" value={loading ? "…" : rupiah(data?.totalPemasukan)} icon="payments" />
+          <StatCard label="Transaksi Bulan Ini" value={loading ? "…" : data?.jumlahTransaksi ?? 0} icon="receipt_long" />
           <StatCard label="Rata-rata per Hari" value={loading ? "…" : rupiah(rataRataHarian)} icon="trending_up" />
         </div>
 
         <div className="lg:col-span-2 card p-space-md sm:p-space-lg flex flex-col">
-          <h2 className="text-headline-md mb-space-md">Tren Pemasukan Harian</h2>
+          <h2 className="text-headline-md mb-space-md">Grafik Pemasukan Harian</h2>
 
           {loading ? (
             <p className="text-body-sm text-tertiary py-space-xl text-center">Memuat grafik…</p>
@@ -99,7 +99,6 @@ export default function LaporanBulananPage() {
       <div className="card overflow-hidden">
         <div className="px-space-md py-space-md border-b border-border-subtle">
           <h2 className="text-headline-md">Riwayat Transaksi Bulan Ini</h2>
-          <p className="text-label-sm text-tertiary capitalize">{namaBulan(bulan)}</p>
         </div>
 
         {loading ? (
