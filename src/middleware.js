@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const COOKIE_NAME = "lalapanku_token";
+const COOKIE_NAME = "poslalapan_token";
 const PUBLIC_PAGES = ["/login"];
 
 async function isValid(token) {
