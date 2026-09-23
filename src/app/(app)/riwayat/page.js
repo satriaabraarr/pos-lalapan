@@ -34,9 +34,14 @@ export default function RiwayatPage() {
       </div>
 
       <div className="card p-space-md flex flex-col lg:flex-row lg:items-end gap-space-md">
-        <div className="flex flex-col gap-1.5 lg:w-56">
+        <div className="flex flex-col gap-1.5 min-w-0 lg:w-56">
           <label className="text-label-md">Tanggal</label>
-          <input type="date" className="input-field" value={tanggal} onChange={(e) => setTanggal(e.target.value)} />
+          <input
+            type="date"
+            className="input-field w-full max-w-full appearance-none"
+            value={tanggal}
+            onChange={(e) => setTanggal(e.target.value)}
+          />
         </div>
 
         <div className="flex flex-col gap-1.5 flex-1">
