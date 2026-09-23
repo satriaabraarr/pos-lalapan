@@ -4,8 +4,11 @@
  * Grafik garis sederhana berbasis SVG murni (tanpa library eksternal).
  * data: [{ label: string, value: number }, ...]
  * Lebar grafik menyesuaikan container (muat 1 layar, tanpa scroll).
- * Label sumbu-X hanya ditampilkan pada tanggal 1 dan kelipatan 5, supaya
- * tidak berdesakan meski datanya sampai 30-31 titik.
+ *
+ * Aturan label sumbu-X (otomatis menyesuaikan jenis datanya):
+ * - Kalau datanya sedikit (<=12 titik, mis. 12 bulan dalam setahun) -> semua label ditampilkan.
+ * - Kalau labelnya angka tanggal (mis. 1-31 hari dalam sebulan) -> hanya tanggal 1 dan
+ *   kelipatan 5 yang ditampilkan, supaya tidak berdesakan.
  */
 export default function LineChart({ data, formatValue = (v) => v, height = 220 }) {
   if (!data || data.length === 0) return null;
@@ -33,8 +36,12 @@ export default function LineChart({ data, formatValue = (v) => v, height = 220 }
 
   const yTicks = [0, 0.5, 1].map((f) => ({ y: padTop + chartH - f * chartH, value: maxValue * f }));
 
-  // Tampilkan label hanya untuk tanggal 1 dan kelipatan 5 (1, 5, 10, 15, 20, 25, 30, ...)
-  const tampilkanLabel = (tanggal) => tanggal === 1 || tanggal % 5 === 0;
+  const tampilkanLabel = (label, index) => {
+    if (data.length <= 12) return true; // dataset kecil (mis. per bulan) -> tampilkan semua
+    const angka = Number(label);
+    if (!Number.isNaN(angka)) return angka === 1 || angka % 5 === 0; // label angka tanggal
+    return index % 5 === 0 || index === data.length - 1; // fallback umum
+  };
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" role="img" aria-label="Grafik tren pemasukan">
@@ -52,12 +59,12 @@ export default function LineChart({ data, formatValue = (v) => v, height = 220 }
 
       {points.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r="2.5" fill="#F97316">
-          <title>{`Tanggal ${p.label}: ${formatValue(p.value)}`}</title>
+          <title>{`${p.label}: ${formatValue(p.value)}`}</title>
         </circle>
       ))}
 
       {points.map((p, i) =>
-        tampilkanLabel(Number(p.label)) ? (
+        tampilkanLabel(p.label, i) ? (
           <text key={i} x={p.x} y={height - 8} textAnchor="middle" fontSize="10" fill="#6B7280">
             {p.label}
           </text>

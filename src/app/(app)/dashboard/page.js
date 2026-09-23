@@ -4,11 +4,20 @@ import Link from "next/link";
 import StatCard from "@/components/StatCard";
 import EmptyState from "@/components/EmptyState";
 import Icon from "@/components/Icon";
-import { rupiah, jam, hariIni } from "@/lib/format";
+import LineChart from "@/components/LineChart";
+import { rupiah, rupiahSingkat, jam, hariIni } from "@/lib/format";
+
+function tahunIni() {
+  return Number(new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Jakarta" }).slice(0, 4));
+}
 
 export default function DashboardPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [tahun, setTahun] = useState(tahunIni());
+  const [dataTahunan, setDataTahunan] = useState(null);
+  const [loadingTahunan, setLoadingTahunan] = useState(true);
 
   useEffect(() => {
     fetch(`/api/reports/daily?date=${hariIni()}`)
@@ -16,6 +25,17 @@ export default function DashboardPage() {
       .then((d) => setData(d.data))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    setLoadingTahunan(true);
+    fetch(`/api/reports/yearly?year=${tahun}`)
+      .then((r) => r.json())
+      .then((d) => setDataTahunan(d.data))
+      .finally(() => setLoadingTahunan(false));
+  }, [tahun]);
+
+  const chartDataTahunan = (dataTahunan?.bulanan || []).map((b) => ({ label: b.label, value: b.total }));
+  const belumAdaDataTahunan = !loadingTahunan && dataTahunan?.jumlahTransaksi === 0;
 
   return (
     <div className="p-space-md sm:p-space-lg flex flex-col gap-space-lg max-w-7xl mx-auto w-full">
@@ -29,10 +49,48 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
-        <StatCard label="Pemasukan Hari Ini" value={loading ? "…" : rupiah(data?.totalPemasukan)} icon="payments" />
-        <StatCard label="Transaksi Hari Ini" value={loading ? "…" : data?.jumlahTransaksi ?? 0} icon="receipt_long" />
-        <StatCard label="Menu Tersedia" value={loading ? "…" : data?.menuTersedia ?? 0} icon="restaurant_menu" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-space-md items-stretch">
+        <div className="flex flex-col gap-space-md">
+          <StatCard label="Pemasukan Hari Ini" value={loading ? "…" : rupiah(data?.totalPemasukan)} icon="payments" />
+          <StatCard label="Transaksi Hari Ini" value={loading ? "…" : data?.jumlahTransaksi ?? 0} icon="receipt_long" />
+          <StatCard label="Menu Tersedia" value={loading ? "…" : data?.menuTersedia ?? 0} icon="restaurant_menu" />
+        </div>
+
+        {/* Tren pemasukan bulan-ke-bulan */}
+        <div className="lg:col-span-2 card p-space-md sm:p-space-lg flex flex-col">
+          <div className="flex items-center justify-between mb-space-md">
+            <h2 className="text-headline-md">Grafik Pemasukan Bulanan</h2>
+            <div className="flex items-center gap-space-xs">
+              <button
+                onClick={() => setTahun((t) => t - 1)}
+                className="w-9 h-9 flex items-center justify-center rounded-lg border border-border-subtle bg-surface-card hover:bg-surface-canvas"
+                aria-label="Tahun sebelumnya"
+              >
+                <Icon name="chevron_left" size={18} />
+              </button>
+              <span className="text-label-md font-semibold min-w-[52px] text-center">{tahun}</span>
+              <button
+                onClick={() => setTahun((t) => t + 1)}
+                disabled={tahun === tahunIni()}
+                className="w-9 h-9 flex items-center justify-center rounded-lg border border-border-subtle bg-surface-card
+                           hover:bg-surface-canvas disabled:opacity-40 disabled:pointer-events-none"
+                aria-label="Tahun berikutnya"
+              >
+                <Icon name="chevron_right" size={18} />
+              </button>
+            </div>
+          </div>
+
+          {loadingTahunan ? (
+            <p className="text-body-sm text-tertiary py-space-xl text-center">Memuat grafik…</p>
+          ) : belumAdaDataTahunan ? (
+            <EmptyState icon="show_chart" title="Belum ada transaksi" description={`Belum ada transaksi tercatat sepanjang tahun ${tahun}.`} />
+          ) : (
+            <div className="flex-1 flex items-center">
+              <LineChart data={chartDataTahunan} formatValue={rupiahSingkat} />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="card overflow-hidden">

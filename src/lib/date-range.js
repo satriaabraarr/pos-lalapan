@@ -26,3 +26,16 @@ export function rentangBulanan(bulan) {
 
   return { year, month, daysInMonth, bulanStr: `${yearStr}-${monthStr}`, start, end };
 }
+
+/**
+ * Membuat rentang waktu 1 tahun penuh (1 Januari 00:00:00 - 31 Desember 23:59:59)
+ * pada zona waktu Asia/Jakarta.
+ * @param {string|number} tahun Contoh: 2026. Kosongkan untuk tahun berjalan.
+ */
+export function rentangTahunan(tahun) {
+  const iniTahun = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Jakarta" }).slice(0, 4);
+  const year = Number(tahun || iniTahun);
+  const start = new Date(`${year}-01-01T00:00:00.000+07:00`);
+  const end = new Date(`${year}-12-31T23:59:59.999+07:00`);
+  return { year, start, end };
+}
