@@ -110,11 +110,6 @@ export default function LoginPage() {
               {loading ? "Memproses..." : "Masuk"}
             </button>
           </form>
-
-          <div className="mt-space-lg card p-space-md text-label-md text-tertiary">
-            <p className="font-semibold text-on-surface mb-1">Akun demo</p>
-            <p>pemilik@lalapanku.id / password123</p>
-          </div>
         </div>
       </div>
     </div>
