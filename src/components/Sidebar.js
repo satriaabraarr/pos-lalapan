@@ -39,7 +39,7 @@ export default function Sidebar({ open, onClose }) {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-title-sm font-bold tracking-tight truncate">
-                Lalapan<span className="text-primary-container">Ku</span>
+                <span className="text-primary-container">POS</span> Lalapan
               </span>
               <span className="text-label-sm text-tertiary truncate">Kasir Warung Lalapan</span>
             </div>
