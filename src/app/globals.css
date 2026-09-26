@@ -39,16 +39,27 @@
   .badge-muted   { @apply inline-flex items-center px-2.5 py-0.5 rounded-md bg-[#F3F4F6] text-tertiary text-label-sm; }
 }
 
-/* ===== Mode cetak struk ===== */
+/* ===== Mode cetak (struk & laporan) ===== */
 @media print {
   html, body { height: auto !important; min-height: 0 !important; overflow: visible !important; }
   body * { visibility: hidden !important; }
+
+  /* Paksa warna background ikut tercetak (kotak ringkasan & header tabel oranye
+     di Laporan Bulanan), tanpa perlu user manual centang "Background graphics". */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
   #area-struk, #area-struk * { visibility: visible !important; }
   #area-struk {
     position: absolute; left: 0; top: 0;
     width: 80mm; padding: 4mm;
     border: none !important; box-shadow: none !important;
   }
+
+  #area-laporan, #area-laporan * { visibility: visible !important; }
+  #area-laporan {
+    position: absolute; left: 0; top: 0; width: 100%;
+  }
+
   .no-print { display: none !important; }
-  @page { margin: 0; size: 80mm auto; }
+  @page { margin: 0; size: 80mm auto; } /* ukuran struk thermal 80mm (default) */
 }

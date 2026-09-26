@@ -5,6 +5,7 @@ import Icon from "@/components/Icon";
 import StatCard from "@/components/StatCard";
 import LineChart from "@/components/LineChart";
 import EmptyState from "@/components/EmptyState";
+import LaporanCetak from "@/components/Report";
 import { rupiah, rupiahSingkat, jam } from "@/lib/format";
 
 function bulanIni() {
@@ -44,6 +45,24 @@ export default function LaporanBulananPage() {
   const belumAdaTransaksi = !loading && data?.jumlahTransaksi === 0;
   const transaksiBulanIni = data?.transaksi || [];
 
+  // Export PDF = cetak khusus bagian laporan (#area-laporan) lewat "Save as PDF"
+  // bawaan browser. @page 80mm (dipakai untuk struk) dioverride sementara jadi
+  // ukuran kertas normal, lalu dikembalikan lagi setelah selesai print.
+  const exportPdf = () => {
+    const style = document.createElement("style");
+    style.id = "print-override-laporan";
+    style.textContent = `@page { size: auto; margin: 14mm; }`;
+    document.head.appendChild(style);
+
+    const bersihkan = () => {
+      style.remove();
+      window.removeEventListener("afterprint", bersihkan);
+    };
+    window.addEventListener("afterprint", bersihkan);
+
+    window.print();
+  };
+
   return (
     <div className="p-space-md sm:p-space-lg flex flex-col gap-space-lg max-w-7xl mx-auto w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
@@ -52,7 +71,7 @@ export default function LaporanBulananPage() {
           <p className="text-body-sm text-tertiary">Tren pemasukan warung dari bulan ke bulan</p>
         </div>
 
-        <div className="flex items-center gap-space-sm">
+        <div className="flex items-center gap-space-sm no-print">
           <button
             onClick={() => setBulan((b) => geserBulan(b, -1))}
             className="w-10 h-10 flex items-center justify-center rounded-lg border border-border-subtle bg-surface-card hover:bg-surface-canvas"
@@ -70,75 +89,86 @@ export default function LaporanBulananPage() {
           >
             <Icon name="chevron_right" />
           </button>
+          <button onClick={exportPdf} disabled={loading} className="btn-outline ml-space-xs">
+            <Icon name="picture_as_pdf" /> Export PDF
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-space-md items-stretch">
-        <div className="flex flex-col gap-space-md">
-          <StatCard label="Pemasukan Bulan Ini" value={loading ? "…" : rupiah(data?.totalPemasukan)} icon="payments" />
-          <StatCard label="Transaksi Bulan Ini" value={loading ? "…" : data?.jumlahTransaksi ?? 0} icon="receipt_long" />
-          <StatCard label="Rata-rata per Hari" value={loading ? "…" : rupiah(rataRataHarian)} icon="trending_up" />
-        </div>
-
-        <div className="lg:col-span-2 card p-space-md sm:p-space-lg flex flex-col">
-          <h2 className="text-headline-md mb-space-md">Grafik Pemasukan Harian</h2>
-
-          {loading ? (
-            <p className="text-body-sm text-tertiary py-space-xl text-center">Memuat grafik…</p>
-          ) : belumAdaTransaksi ? (
-            <EmptyState icon="show_chart" title="Belum ada transaksi" description={`Belum ada transaksi tercatat pada ${namaBulan(bulan)}.`} />
-          ) : (
-            <div className="flex-1 flex items-center">
-              <LineChart data={chartData} formatValue={rupiahSingkat} />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Tabel riwayat transaksi bulan berjalan */}
-      <div className="card overflow-hidden">
-        <div className="px-space-md py-space-md border-b border-border-subtle">
-          <h2 className="text-headline-md">Riwayat Transaksi Bulan Ini</h2>
-        </div>
-
-        {loading ? (
-          <p className="p-space-lg text-body-sm text-tertiary">Memuat data…</p>
-        ) : transaksiBulanIni.length === 0 ? (
-          <EmptyState icon="receipt_long" title="Belum ada transaksi" description={`Belum ada transaksi pada ${namaBulan(bulan)}.`} />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-body-sm">
-              <thead className="bg-surface-canvas text-label-md text-tertiary">
-                <tr>
-                  <th className="text-left px-space-md py-3 font-semibold">No. Transaksi</th>
-                  <th className="text-left px-space-md py-3 font-semibold">Tanggal</th>
-                  <th className="text-left px-space-md py-3 font-semibold hidden md:table-cell">Item</th>
-                  <th className="text-right px-space-md py-3 font-semibold">Total</th>
-                  <th className="px-space-md py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {transaksiBulanIni.map((t) => (
-                  <tr key={t.id} className="border-t border-border-subtle hover:bg-surface-canvas">
-                    <td className="px-space-md py-3 font-semibold">{t.transactionNumber}</td>
-                    <td className="px-space-md py-3 text-tertiary">
-                      {new Date(t.createdAt).toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "short" })} · {jam(t.createdAt)}
-                    </td>
-                    <td className="px-space-md py-3 text-tertiary hidden md:table-cell">
-                      {t.items.reduce((a, i) => a + i.quantity, 0)} item
-                    </td>
-                    <td className="px-space-md py-3 text-right font-semibold">{rupiah(t.totalAmount)}</td>
-                    <td className="px-space-md py-3 text-right">
-                      <Link href={`/riwayat/${t.id}`} className="text-primary-container hover:underline text-label-md font-semibold">
-                        Detail
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div id="area-laporan" className="flex flex-col gap-space-lg">
+        {/* ===== Tampilan layar (dashboard) — disembunyikan saat export PDF ===== */}
+        <div className="print:hidden flex flex-col gap-space-lg">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+            <StatCard label="Total Pemasukan" value={loading ? "…" : rupiah(data?.totalPemasukan)} icon="payments" />
+            <StatCard label="Jumlah Transaksi" value={loading ? "…" : data?.jumlahTransaksi ?? 0} icon="receipt_long" />
+            <StatCard label="Rata-rata per Hari" value={loading ? "…" : rupiah(rataRataHarian)} icon="trending_up" />
           </div>
-        )}
+
+          <div className="card p-space-md sm:p-space-lg flex flex-col">
+            <h2 className="text-headline-md mb-space-md">Tren Pemasukan Harian</h2>
+
+            {loading ? (
+              <p className="text-body-sm text-tertiary py-space-xl text-center">Memuat grafik…</p>
+            ) : belumAdaTransaksi ? (
+              <EmptyState icon="show_chart" title="Belum ada transaksi" description={`Belum ada transaksi tercatat pada ${namaBulan(bulan)}.`} />
+            ) : (
+              <div className="flex-1 flex items-center">
+                <LineChart data={chartData} formatValue={rupiahSingkat} />
+              </div>
+            )}
+          </div>
+
+          <div className="card overflow-hidden">
+            <div className="px-space-md py-space-md border-b border-border-subtle">
+              <h2 className="text-headline-md">Riwayat Transaksi Bulan Ini</h2>
+              <p className="text-label-sm text-tertiary capitalize">{namaBulan(bulan)}</p>
+            </div>
+
+            {loading ? (
+              <p className="p-space-lg text-body-sm text-tertiary">Memuat data…</p>
+            ) : transaksiBulanIni.length === 0 ? (
+              <EmptyState icon="receipt_long" title="Belum ada transaksi" description={`Belum ada transaksi pada ${namaBulan(bulan)}.`} />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-body-sm">
+                  <thead className="bg-surface-canvas text-label-md text-tertiary">
+                    <tr>
+                      <th className="text-left px-space-md py-3 font-semibold">No. Transaksi</th>
+                      <th className="text-left px-space-md py-3 font-semibold">Tanggal</th>
+                      <th className="text-left px-space-md py-3 font-semibold hidden md:table-cell">Item</th>
+                      <th className="text-right px-space-md py-3 font-semibold">Total</th>
+                      <th className="px-space-md py-3"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transaksiBulanIni.map((t) => (
+                      <tr key={t.id} className="border-t border-border-subtle hover:bg-surface-canvas">
+                        <td className="px-space-md py-3 font-semibold">{t.transactionNumber}</td>
+                        <td className="px-space-md py-3 text-tertiary">
+                          {new Date(t.createdAt).toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "short" })} · {jam(t.createdAt)}
+                        </td>
+                        <td className="px-space-md py-3 text-tertiary hidden md:table-cell">
+                          {t.items.reduce((a, i) => a + i.quantity, 0)} item
+                        </td>
+                        <td className="px-space-md py-3 text-right font-semibold">{rupiah(t.totalAmount)}</td>
+                        <td className="px-space-md py-3 text-right">
+                          <Link href={`/riwayat/${t.id}`} className="text-primary-container hover:underline text-label-md font-semibold">
+                            Detail
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ===== Template dokumen laporan — hanya muncul saat Export PDF ===== */}
+        <div className="hidden print:block">
+          <LaporanCetak bulan={bulan} data={data} />
+        </div>
       </div>
     </div>
   );
