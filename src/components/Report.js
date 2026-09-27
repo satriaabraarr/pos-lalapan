@@ -52,7 +52,7 @@ export default function LaporanCetak({ bulan, data }) {
       </div>
 
       {/* Garis pembatas */}
-      <hr className="border-t-2 border-black mb-space-md" />
+      <hr className="border-t-1 border-gray-300 mb-space-lg" />
 
       {/* Tiga kotak ringkasan */}
       <div className="grid grid-cols-3 gap-space-sm mb-space-lg">

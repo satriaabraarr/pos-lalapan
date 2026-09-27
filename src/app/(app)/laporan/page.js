@@ -98,24 +98,26 @@ export default function LaporanBulananPage() {
       <div id="area-laporan" className="flex flex-col gap-space-lg">
         {/* ===== Tampilan layar (dashboard) — disembunyikan saat export PDF ===== */}
         <div className="print:hidden flex flex-col gap-space-lg">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
-            <StatCard label="Total Pemasukan" value={loading ? "…" : rupiah(data?.totalPemasukan)} icon="payments" />
-            <StatCard label="Jumlah Transaksi" value={loading ? "…" : data?.jumlahTransaksi ?? 0} icon="receipt_long" />
-            <StatCard label="Rata-rata per Hari" value={loading ? "…" : rupiah(rataRataHarian)} icon="trending_up" />
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-space-md items-stretch">
+            <div className="flex flex-col gap-space-md">
+              <StatCard label="Total Pemasukan" value={loading ? "…" : rupiah(data?.totalPemasukan)} icon="payments" />
+              <StatCard label="Jumlah Transaksi" value={loading ? "…" : data?.jumlahTransaksi ?? 0} icon="receipt_long" />
+              <StatCard label="Rata-rata per Hari" value={loading ? "…" : rupiah(rataRataHarian)} icon="trending_up" />
+            </div>
 
-          <div className="card p-space-md sm:p-space-lg flex flex-col">
-            <h2 className="text-headline-md mb-space-md">Tren Pemasukan Harian</h2>
+            <div className="lg:col-span-2 card p-space-md sm:p-space-lg flex flex-col">
+              <h2 className="text-headline-md mb-space-md">Tren Pemasukan Harian</h2>
 
-            {loading ? (
-              <p className="text-body-sm text-tertiary py-space-xl text-center">Memuat grafik…</p>
-            ) : belumAdaTransaksi ? (
-              <EmptyState icon="show_chart" title="Belum ada transaksi" description={`Belum ada transaksi tercatat pada ${namaBulan(bulan)}.`} />
-            ) : (
-              <div className="flex-1 flex items-center">
-                <LineChart data={chartData} formatValue={rupiahSingkat} />
-              </div>
-            )}
+              {loading ? (
+                <p className="text-body-sm text-tertiary py-space-xl text-center">Memuat grafik…</p>
+              ) : belumAdaTransaksi ? (
+                <EmptyState icon="show_chart" title="Belum ada transaksi" description={`Belum ada transaksi tercatat pada ${namaBulan(bulan)}.`} />
+              ) : (
+                <div className="flex-1 flex items-center">
+                  <LineChart data={chartData} formatValue={rupiahSingkat} />
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="card overflow-hidden">
