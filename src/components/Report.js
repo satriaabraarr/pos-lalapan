@@ -27,28 +27,32 @@ export default function LaporanCetak({ bulan, data }) {
 
   return (
     <div className="bg-white text-black">
-      {/* Logo + nama aplikasi */}
-      <div className="flex items-center justify-center gap-space-sm mb-space-sm">
-        <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-          style={{ backgroundColor: "#F97316" }}
-        >
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="#FFFFFF">
-            <path d={PATH_IKON_RESTORAN} />
-          </svg>
+      {/* Header: judul di kiri, logo kecil di kanan */}
+      <div className="flex items-start justify-between mb-space-md">
+        <div>
+          <p className="text-lg font-bold leading-tight">Laporan Pemasukan Bulanan</p>
+          <p className="text-xs text-gray-600 mt-0.5">
+            Periode <span className="capitalize">{namaBulan(bulan)}</span>
+          </p>
         </div>
-        <p className="text-xl font-bold leading-none">
-          <span style={{ color: "#F97316" }}>POS</span> <span className="text-black">Lalapan</span>
-        </p>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <div
+            className="w-8 h-8 rounded flex items-center justify-center shrink-0"
+            style={{ backgroundColor: "#F97316" }}
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="#FFFFFF">
+              <path d={PATH_IKON_RESTORAN} />
+            </svg>
+          </div>
+          <p className="text-sm font-bold leading-none">
+            <span style={{ color: "#F97316" }}>POS</span> <span className="text-black">Lalapan</span>
+          </p>
+        </div>
       </div>
 
-      {/* Subjudul */}
-      <p className="text-sm font-semibold text-center mb-space-sm">
-        Laporan Pemasukan Bulanan - Periode <span className="capitalize">{namaBulan(bulan)}</span>
-      </p>
-
       {/* Garis pembatas */}
-      <hr className="border-t-1 border-black mb-space-lg" />
+      <hr className="border-t-2 border-black mb-space-md" />
 
       {/* Tiga kotak ringkasan */}
       <div className="grid grid-cols-3 gap-space-sm mb-space-lg">
