@@ -28,7 +28,7 @@ export default function LaporanCetak({ bulan, data }) {
   return (
     <div className="bg-white text-black">
       {/* Logo + nama aplikasi */}
-      <div className="flex items-center gap-space-sm mb-space-sm">
+      <div className="flex items-center justify-center gap-space-sm mb-space-sm">
         <div
           className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
           style={{ backgroundColor: "#F97316" }}
@@ -38,31 +38,31 @@ export default function LaporanCetak({ bulan, data }) {
           </svg>
         </div>
         <p className="text-xl font-bold leading-none">
-          <span style={{ color: "#f97316" }}>POS</span> <span className="text-black">Lalapan</span>
+          <span style={{ color: "#F97316" }}>POS</span> <span className="text-black">Lalapan</span>
         </p>
       </div>
 
       {/* Subjudul */}
-      <p className="text-sm font-semibold mb-space-sm">
+      <p className="text-sm font-semibold text-center mb-space-sm">
         Laporan Pemasukan Bulanan - Periode <span className="capitalize">{namaBulan(bulan)}</span>
       </p>
 
       {/* Garis pembatas */}
-      <hr className="border-t-2 border-black mb-space-md border-double" />
+      <hr className="border-t-1 border-black mb-space-lg" />
 
       {/* Tiga kotak ringkasan */}
       <div className="grid grid-cols-3 gap-space-sm mb-space-lg">
-        <div className="border border-black rounded px-space-sm py-space-sm text-center" style={{ backgroundColor: "#FFF1E6" }}>
+        <div className="rounded px-space-sm py-space-sm text-center" style={{ backgroundColor: "#FFF1E6" }}>
           <p className="text-xs text-gray-700">Total Pemasukan</p>
-          <p className="text-sm font-bold mt-0.5">{rupiah(data.totalPemasukan)}</p>
+          <p className="text-sm font-bold mt-0.5" style={{ color: "#F97316" }}>{rupiah(data.totalPemasukan)}</p>
         </div>
-        <div className="border border-black rounded px-space-sm py-space-sm text-center" style={{ backgroundColor: "#FFF1E6" }}>
+        <div className="rounded px-space-sm py-space-sm text-center" style={{ backgroundColor: "#FFF1E6" }}>
           <p className="text-xs text-gray-700">Jumlah Transaksi</p>
-          <p className="text-sm font-bold mt-0.5">{data.jumlahTransaksi} transaksi</p>
+          <p className="text-sm font-bold mt-0.5" style={{ color: "#F97316" }}>{data.jumlahTransaksi} transaksi</p>
         </div>
-        <div className="border border-black rounded px-space-sm py-space-sm text-center" style={{ backgroundColor: "#FFF1E6" }}>
+        <div className="rounded px-space-sm py-space-sm text-center" style={{ backgroundColor: "#FFF1E6" }}>
           <p className="text-xs text-gray-700">Rata-rata per Hari</p>
-          <p className="text-sm font-bold mt-0.5">{rupiah(rataRataHarian)}</p>
+          <p className="text-sm font-bold mt-0.5" style={{ color: "#F97316" }}>{rupiah(rataRataHarian)}</p>
         </div>
       </div>
 
@@ -71,37 +71,37 @@ export default function LaporanCetak({ bulan, data }) {
       {transaksi.length === 0 ? (
         <p className="text-xs mb-space-lg">Tidak ada transaksi pada bulan ini.</p>
       ) : (
-        <table className="w-full text-xs border border-collapse border-black mb-space-lg">
+        <table className="w-full text-xs mb-space-lg" style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ backgroundColor: "#F97316" }} className="text-white">
-              <th className="border border-black px-space-sm py-1 text-center w-8">No</th>
-              <th className="border border-black px-space-sm py-1 text-left">No. Transaksi</th>
-              <th className="border border-black px-space-sm py-1 text-left">Tanggal</th>
-              <th className="border border-black px-space-sm py-1 text-center">Waktu</th>
-              <th className="border border-black px-space-sm py-1 text-center">Item</th>
-              <th className="border border-black px-space-sm py-1 text-right">Total</th>
+              <th className="px-space-sm py-1.5 text-center w-8">No</th>
+              <th className="px-space-sm py-1.5 text-left">No. Transaksi</th>
+              <th className="px-space-sm py-1.5 text-left">Tanggal</th>
+              <th className="px-space-sm py-1.5 text-center">Waktu</th>
+              <th className="px-space-sm py-1.5 text-center">Item</th>
+              <th className="px-space-sm py-1.5 text-right">Total</th>
             </tr>
           </thead>
           <tbody>
             {transaksi.map((t, i) => (
-              <tr key={t.id}>
-                <td className="border border-black px-space-sm py-1 text-center">{i + 1}</td>
-                <td className="border border-black px-space-sm py-1">{t.transactionNumber}</td>
-                <td className="border border-black px-space-sm py-1">
+              <tr key={t.id} style={{ backgroundColor: i % 2 === 0 ? "#FFFFFF" : "#F5F5F5" }}>
+                <td className="px-space-sm py-1 text-center">{i + 1}</td>
+                <td className="px-space-sm py-1">{t.transactionNumber}</td>
+                <td className="px-space-sm py-1">
                   {new Date(t.createdAt).toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "2-digit", year: "numeric" })}
                 </td>
-                <td className="border border-black px-space-sm py-1 text-center">{jam(t.createdAt)}</td>
-                <td className="border border-black px-space-sm py-1 text-center">{t.items.reduce((a, i2) => a + i2.quantity, 0)}</td>
-                <td className="border border-black px-space-sm py-1 text-right">{rupiah(t.totalAmount)}</td>
+                <td className="px-space-sm py-1 text-center">{jam(t.createdAt)}</td>
+                <td className="px-space-sm py-1 text-center">{t.items.reduce((a, i2) => a + i2.quantity, 0)}</td>
+                <td className="px-space-sm py-1 text-right">{rupiah(t.totalAmount)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr style={{ backgroundColor: "#F97316" }} className="text-white">
-              <td colSpan={5} className="border border-black px-space-sm py-1.5 text-right font-bold">
+              <td colSpan={5} className="px-space-sm py-1.5 text-right font-bold">
                 Total Pemasukan
               </td>
-              <td className="border border-black px-space-sm py-1.5 text-right font-bold">{rupiah(data.totalPemasukan)}</td>
+              <td className="px-space-sm py-1.5 text-right font-bold">{rupiah(data.totalPemasukan)}</td>
             </tr>
           </tfoot>
         </table>
